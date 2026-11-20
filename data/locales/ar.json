@@ -29,6 +29,8 @@
     "status_active_layer": "طبقة افتراضية",
     "status_ondemand_layer": "تحميل عند الطلب",
     "status_pending": "جارٍ التحميل...",
+    "status_online": "متصل • جاهز دون إنترنت",
+    "status_offline_active": "عدم الاتصال نشط",
     "setting_language": "لغة التطبيق والاتجاه",
     "setting_language_desc": "تغيير لغة الواجهة وتطبيق اتجاه RTL/LTR فوراً.",
     "setting_quality": "جودة الرسوميات والأداء",
