@@ -5,7 +5,7 @@ import { I18n } from "../localization/i18n.js";
 import { Router } from "./router.js";
 import { AnatomyViewer3D } from "../anatomy3d/viewer3d.js";
 import { ImagingLabController } from "../imaging/imagingLab.js";
-
+import { AcademyLabController } from "../academy/academyLab.js";
 let activeViewer = null;
 let physAnimId = null;
 
