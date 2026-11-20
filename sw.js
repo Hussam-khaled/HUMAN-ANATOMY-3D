@@ -1,4 +1,4 @@
-const CACHE_NAME = "ha3d-core-v1.0.0";
+const CACHE_NAME = "ha3d-core-v1.0.1";
 
 const CORE_ASSETS = [
   "./",
@@ -39,26 +39,16 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request)
-        .then((networkResponse) => {
-          if (
-            !networkResponse ||
-            networkResponse.status !== 200 ||
-            networkResponse.type !== "basic"
-          ) {
-            return networkResponse;
-          }
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
-          return networkResponse;
-        })
-        .catch(() => caches.match("./index.html"));
-    })
+        }
+        return networkResponse;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
