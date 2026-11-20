@@ -1,4 +1,4 @@
-const CACHE_NAME = "ha3d-core-v3.0.0";
+const CACHE_NAME = "ha3d-core-v4.0.0";
 
 const CORE_ASSETS = [
   "./",
@@ -47,9 +47,9 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
   const isLocal = url.origin === self.location.origin;
-  const isThreeCdn = url.hostname === "cdn.jsdelivr.net";
+  const isCdn = url.hostname === "cdn.jsdelivr.net" || url.hostname === "www.gstatic.com";
 
-  if (!isLocal && !isThreeCdn) return;
+  if (!isLocal && !isCdn) return;
 
   event.respondWith(
     fetch(event.request)
