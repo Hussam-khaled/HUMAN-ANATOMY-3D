@@ -6,6 +6,7 @@ import { Router } from "./router.js";
 import { AnatomyViewer3D } from "../anatomy3d/viewer3d.js";
 import { ImagingLabController } from "../imaging/imagingLab.js";
 import { AcademyLabController } from "../academy/academyLab.js";
+import { QuizLabController } from "../quiz/quizLab.js";
 let activeViewer = null;
 let physAnimId = null;
 
@@ -531,10 +532,11 @@ export async function renderView(routeId, containerEl, onLanguageChange) {
   }
 
   if (routeId === "quiz") {
-    containerEl.innerHTML = renderStageNotice("nav_quiz", "desc_quiz", "planned_phase_9");
-    bindGotoButtons(containerEl);
-    return;
-  }
+  const quizLab = new QuizLabController(containerEl);
+  quizLab.init();
+  return;
+}
+
 
   if (routeId === "settings") {
     const currentLang = SettingsService.getLanguage();
