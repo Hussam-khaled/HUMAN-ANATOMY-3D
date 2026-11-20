@@ -3,7 +3,7 @@ import { SettingsService } from "./settings.js";
 import { DatabaseService } from "../data/db.js";
 import { I18n } from "../localization/i18n.js";
 import { ROUTES, Router } from "../ui/router.js";
-import { renderView } from "../ui/views.js";
+import { renderView, cleanupActiveView } from "../ui/views.js";
 import { getIcon } from "../ui/icons.js";
 
 const dom = {};
@@ -27,6 +27,13 @@ function toggleDrawer(forceState) {
   const shouldOpen = typeof forceState === "boolean" ? forceState : !dom.sidebar.classList.contains("is-open");
   dom.sidebar.classList.toggle("is-open", shouldOpen);
   dom.backdrop.classList.toggle("is-visible", shouldOpen);
+}
+
+function updateNetworkIndicator() {
+  if (!dom.offlineStatus) return;
+  const isOnline = navigator.onLine;
+  dom.offlineStatus.textContent = isOnline ? I18n.t("status_online") : I18n.t("status_offline_active");
+  dom.offlineStatus.style.color = isOnline ? "var(--accent-medical)" : "#FCD34D";
 }
 
 function renderNavigationMenus(activeRouteId) {
@@ -69,11 +76,12 @@ function updateChromeText(activeRouteId) {
   document.title = `${I18n.t(activeRoute.titleKey)} | ${I18n.t("app_short")}`;
   dom.brandTitle.textContent = I18n.t("app_short");
   dom.topbarTitle.textContent = I18n.t(activeRoute.titleKey);
-  dom.offlineStatus.textContent = I18n.t("offline_badge");
   dom.btnQuickLang.textContent = I18n.currentLang === "ar" ? "EN" : "عربي";
+  updateNetworkIndicator();
 }
 
 async function handleRouteChange(routeId) {
+  cleanupActiveView();
   updateChromeText(routeId);
   renderNavigationMenus(routeId);
   await renderView(routeId, dom.viewContainer, handleLanguageSwitch);
@@ -117,17 +125,10 @@ async function bootstrap() {
     if (e.target === dom.modal) dom.modal.classList.remove("is-open");
   });
 
+  window.addEventListener("online", updateNetworkIndicator);
+  window.addEventListener("offline", updateNetworkIndicator);
+
   Router.init(handleRouteChange);
 }
 
 document.addEventListener("DOMContentLoaded", bootstrap);
-window.addEventListener("error", (e) => {
-  const box = document.getElementById("view-container") || document.body;
-  box.innerHTML = `<pre style="color:#f87171;direction:ltr;text-align:left;padding:16px;white-space:pre-wrap;">Error: ${e.message}\n${e.filename || ""}:${e.lineno || ""}</pre>`;
-});
-
-window.addEventListener("unhandledrejection", (e) => {
-  const box = document.getElementById("view-container") || document.body;
-  const msg = e.reason && e.reason.message ? e.reason.message : String(e.reason);
-  box.innerHTML = `<pre style="color:#f87171;direction:ltr;text-align:left;padding:16px;white-space:pre-wrap;">Promise Error: ${msg}</pre>`;
-});
