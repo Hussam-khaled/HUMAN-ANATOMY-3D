@@ -1,4 +1,4 @@
-const CACHE_NAME = "ha3d-core-v4.0.0";
+const CACHE_NAME = "ha3d-core-v5.0.0";
 
 const CORE_ASSETS = [
   "./",
@@ -7,6 +7,7 @@ const CORE_ASSETS = [
   "./assets/css/tokens.css",
   "./assets/css/layout.css",
   "./assets/css/atlas3d.css",
+  "./assets/css/physiology.css",
   "./data/licenses.json",
   "./data/locales/ar.json",
   "./data/locales/en.json",
@@ -18,6 +19,7 @@ const CORE_ASSETS = [
   "./js/ui/router.js",
   "./js/anatomy3d/prototypeModel.js",
   "./js/anatomy3d/viewer3d.js",
+  "./js/physiology/physiologyLab.js",
   "./js/ui/views.js",
   "./js/core/bootstrap.js"
 ];
