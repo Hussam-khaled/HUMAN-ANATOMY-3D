@@ -1,0 +1,28 @@
+{
+  "languageCode": "ar",
+  "dir": "rtl",
+  "strings": {
+    "app_title": "التشريح البشري ثلاثي الأبعاد",
+    "app_subtitle": "مختبر تشريح تفاعلي وتعليمي يعمل دون إنترنت",
+    "phase1_title": "المرحلة الأولى: تأسيس البنية التقنية",
+    "phase1_desc": "لوحة التحقق الذاتي للتأكد من جاهزية النواة التقنية قبل بناء واجهة التطبيق.",
+    "check_db": "قاعدة البيانات المحلية (IndexedDB)",
+    "check_systems": "الأجهزة التشريحية المسجلة",
+    "check_i18n": "نظام اللغة والاتجاه (RTL/LTR)",
+    "check_offline": "خدمة العمل دون إنترنت (Service Worker)",
+    "check_licenses": "سجل التراخيص المجانية",
+    "status_ok": "ناجح",
+    "status_pending": "جارٍ الفحص...",
+    "status_warn": "تنبيه",
+    "status_fail": "فشل",
+    "btn_switch_lang": "تبديل إلى الإنجليزية (English)",
+    "nav_atlas": "أطلس التشريح ثلاثي الأبعاد",
+    "nav_systems": "أجهزة الجسم",
+    "nav_anatomy_lab": "مختبر التشريح",
+    "nav_physiology_lab": "مختبر وظائف الأعضاء",
+    "nav_imaging_lab": "مختبر التصوير الطبي",
+    "nav_academy": "الأكاديمية الطبية",
+    "nav_quiz": "مركز الاختبارات",
+    "nav_settings": "الإعدادات"
+  }
+}
