@@ -525,9 +525,9 @@ export async function renderView(routeId, containerEl, onLanguageChange) {
   }
 
   if (routeId === "academy") {
-    containerEl.innerHTML = renderStageNotice("nav_academy", "desc_academy", "planned_phase_8");
-    bindGotoButtons(containerEl);
-    return;
+  const acadLab = new AcademyLabController(containerEl);
+  await acadLab.init();
+  return;
   }
 
   if (routeId === "quiz") {
