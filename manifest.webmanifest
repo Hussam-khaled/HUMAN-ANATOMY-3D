@@ -1,0 +1,13 @@
+{
+  "name": "HUMAN ANATOMY 3D - مختبر التشريح البشري",
+  "short_name": "Anatomy 3D",
+  "description": "مختبر تشريح بشري ثلاثي الأبعاد تفاعلي وتعليمي يعمل دون إنترنت.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0B1117",
+  "theme_color": "#0F172A",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": []
+}
