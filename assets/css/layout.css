@@ -441,3 +441,22 @@ body {
   display: block;
   font-size: 0.8rem;
 }
+/* ===== Modern Vector Icons ===== */
+.svg-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.nav-icon,
+.bottom-nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottom-nav-btn .svg-icon {
+  width: 21px;
+  height: 21px;
+}
