@@ -4,6 +4,7 @@ import { DatabaseService } from "../data/db.js";
 import { I18n } from "../localization/i18n.js";
 import { Router } from "./router.js";
 import { AnatomyViewer3D } from "../anatomy3d/viewer3d.js";
+import { ImagingLabController } from "../imaging/imagingLab.js";
 
 let activeViewer = null;
 let physAnimId = null;
