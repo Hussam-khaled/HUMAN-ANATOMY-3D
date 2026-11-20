@@ -8,30 +8,37 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="stylesheet" href="./assets/css/tokens.css" />
   <link rel="stylesheet" href="./assets/css/layout.css" />
+  <link rel="stylesheet" href="./assets/css/atlas3d.css" />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
   <div class="app-shell">
-    <!-- Backdrop for mobile drawer -->
     <div id="drawer-backdrop" class="drawer-backdrop"></div>
 
-    <!-- Sidebar / Navigation Drawer -->
     <aside id="sidebar" class="sidebar" aria-label="Main Navigation">
       <div class="sidebar-header">
         <span id="brand-title" class="brand-title">HUMAN ANATOMY 3D</span>
-        <span class="brand-badge">v2</span>
+        <span class="brand-badge">v3</span>
       </div>
       <nav id="sidebar-nav" class="sidebar-nav"></nav>
       <div class="sidebar-footer">
         <span id="offline-status">يعمل دون إنترنت</span>
-        <span>PWA</span>
+        <span>3D WebGL</span>
       </div>
     </aside>
 
-    <!-- Main Content Column -->
     <div class="main-wrapper">
       <header class="topbar">
         <div class="topbar-start">
-          <button id="btn-menu" class="icon-btn menu-toggle-btn" type="button" aria-label="Menu">☰</button>
+          <button id="btn-menu" class="icon-btn menu-toggle-btn" type="button" aria-label="Menu"></button>
           <h1 id="topbar-title" class="topbar-title">التشريح البشري ثلاثي الأبعاد</h1>
         </div>
         <div class="topbar-end">
@@ -42,16 +49,14 @@
       <main id="view-container" class="view-container"></main>
     </div>
 
-    <!-- Mobile Bottom Quick Navigation -->
     <nav id="bottom-nav" class="bottom-nav" aria-label="Quick Navigation"></nav>
   </div>
 
-  <!-- Shared Modal Dialog -->
   <div id="app-modal" class="modal-overlay" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-header">
         <h3 id="modal-title"></h3>
-        <button id="btn-modal-close" class="icon-btn" type="button" aria-label="Close">✕</button>
+        <button id="btn-modal-close" class="icon-btn" type="button" aria-label="Close"></button>
       </div>
       <div id="modal-body" class="modal-body"></div>
     </div>
