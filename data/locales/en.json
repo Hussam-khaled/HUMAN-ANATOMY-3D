@@ -90,5 +90,25 @@
     "phys_exp_resp": "Educational simulation: Respiratory rate and tidal volume rise during exertion to support gas exchange.",
     "phys_exp_digest": "Educational simulation: Peristalsis propels and mixes chyme, typically down-regulated during intense exertion.",
     "phys_exp_musc": "Educational simulation: Higher load increases generated force while accelerating muscular fatigue."
+        "phys_cap_heart": "Interactive Heart Model",
+    "phys_cap_lungs": "Lung Expansion Cycle",
+    "phys_cap_digest": "GI Tract Activity",
+    "phys_cap_musc": "Muscle Fiber Contraction",
+    "phys_trace_ecg": "Pulse & Waveform Trace",
+    "phys_trace_resp": "Ventilation Trace",
+    "phys_trace_digest": "Peristalsis Trace",
+    "phys_trace_musc": "Muscle Tension Trace",
+    "phys_ref_hr": "Normal: 60–100 BPM",
+    "phys_ref_co": "At rest: ~5 L/min",
+    "phys_ref_bp": "Baseline: ~120 mmHg",
+    "phys_ref_rr": "Normal: 12–20 /min",
+    "phys_ref_vent": "Baseline: ~6–8 L/min",
+    "phys_ref_motility": "Simulation range",
+    "phys_ref_transit": "Educational estimate",
+    "phys_ref_abs": "Absorption index",
+    "phys_ref_load": "Resistance level",
+    "phys_ref_force": "Estimated force",
+    "phys_ref_fatigue": "Fatigue buildup"
+
   }
 }
