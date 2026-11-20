@@ -1,4 +1,4 @@
-const CACHE_NAME = "ha3d-core-v2.1.0";
+const CACHE_NAME = "ha3d-core-v3.0.0";
 
 const CORE_ASSETS = [
   "./",
@@ -6,6 +6,7 @@ const CORE_ASSETS = [
   "./manifest.webmanifest",
   "./assets/css/tokens.css",
   "./assets/css/layout.css",
+  "./assets/css/atlas3d.css",
   "./data/licenses.json",
   "./data/locales/ar.json",
   "./data/locales/en.json",
@@ -15,6 +16,8 @@ const CORE_ASSETS = [
   "./js/localization/i18n.js",
   "./js/ui/icons.js",
   "./js/ui/router.js",
+  "./js/anatomy3d/prototypeModel.js",
+  "./js/anatomy3d/viewer3d.js",
   "./js/ui/views.js",
   "./js/core/bootstrap.js"
 ];
@@ -41,6 +44,12 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  const url = new URL(event.request.url);
+  const isLocal = url.origin === self.location.origin;
+  const isThreeCdn = url.hostname === "cdn.jsdelivr.net";
+
+  if (!isLocal && !isThreeCdn) return;
 
   event.respondWith(
     fetch(event.request)
