@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": "HUMAN ANATOMY 3D",
+  "assets": [
+    {
+      "id": "lib_threejs",
+      "name": "Three.js",
+      "category": "3D Engine (Planned Phase 3)",
+      "sourceUrl": "https://github.com/mrdoob/three.js",
+      "license": "MIT",
+      "commercialUseAllowed": true,
+      "attributionRequired": true,
+      "notes": "Free open-source WebGL 3D engine supporting GLB/GLTF models."
+    },
+    {
+      "id": "api_indexeddb",
+      "name": "W3C IndexedDB API",
+      "category": "Local Database",
+      "sourceUrl": "https://www.w3.org/TR/IndexedDB/",
+      "license": "W3C Open Standard",
+      "commercialUseAllowed": true,
+      "attributionRequired": false,
+      "notes": "Native browser offline database used for storing anatomical data and user progress."
+    },
+    {
+      "id": "lib_capacitor",
+      "name": "Ionic Capacitor (Planned Phase 10)",
+      "category": "Android APK Wrapper",
+      "sourceUrl": "https://github.com/ionic-team/capacitor",
+      "license": "MIT",
+      "commercialUseAllowed": true,
+      "attributionRequired": true,
+      "notes": "Packages the offline web application into a native installable Android APK."
+    }
+  ]
+}
