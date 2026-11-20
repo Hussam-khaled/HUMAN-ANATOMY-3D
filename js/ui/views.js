@@ -3,6 +3,16 @@ import { SettingsService } from "../core/settings.js";
 import { DatabaseService } from "../data/db.js";
 import { I18n } from "../localization/i18n.js";
 import { Router } from "./router.js";
+import { AnatomyViewer3D } from "../anatomy3d/viewer3d.js";
+
+let activeViewer = null;
+
+export function cleanupActiveView() {
+  if (activeViewer) {
+    activeViewer.dispose();
+    activeViewer = null;
+  }
+}
 
 function renderStageNotice(titleKey, descKey, phaseLabelKey) {
   return `
@@ -17,17 +27,111 @@ function renderStageNotice(titleKey, descKey, phaseLabelKey) {
       </div>
       <p class="card-desc">${I18n.t("module_honesty_note")}</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn-secondary" type="button" data-goto="atlas">${I18n.t("nav_atlas")}</button>
         <button class="btn-secondary" type="button" data-goto="systems">${I18n.t("nav_systems")}</button>
-        <button class="btn-secondary" type="button" data-goto="settings">${I18n.t("nav_settings")}</button>
       </div>
     </div>
   `;
 }
 
 export async function renderView(routeId, containerEl, onLanguageChange) {
+  cleanupActiveView();
+
   if (routeId === "atlas") {
-    containerEl.innerHTML = renderStageNotice("nav_atlas", "desc_atlas", "planned_phase_3");
-    bindGotoButtons(containerEl);
+    containerEl.innerHTML = `
+      <div class="atlas-layout">
+        <div id="prototype-disclaimer" class="disclaimer-banner">
+          <span>${I18n.t("atlas_prototype_disclaimer")}</span>
+        </div>
+
+        <div class="viewport-wrapper">
+          <div id="viewer-loading" class="viewport-loading">
+            <span>${I18n.t("status_pending")}</span>
+          </div>
+
+          <div class="viewport-hud-top">
+            <span id="hud-model-stats" class="hud-pill">${I18n.t("atlas_meshes_loading")}</span>
+            <span class="hud-pill">${I18n.t("atlas_gesture_hint")}</span>
+          </div>
+
+          <div id="atlas-canvas-host" class="viewport-canvas-host"></div>
+
+          <div class="viewport-hud-bottom">
+            <button id="btn-reset-cam" class="hud-btn" type="button">${I18n.t("btn_reset_camera")}</button>
+            <button id="btn-toggle-skin" class="hud-btn is-active" type="button">${I18n.t("btn_toggle_skin")}</button>
+            <button id="btn-auto-rotate" class="hud-btn" type="button">${I18n.t("btn_auto_rotate")}</button>
+          </div>
+        </div>
+
+        <section class="import-bar">
+          <div>
+            <div class="card-title">${I18n.t("atlas_import_title")}</div>
+            <div class="card-desc">${I18n.t("atlas_import_desc")}</div>
+          </div>
+          <div class="import-actions">
+            <input id="glb-file-input" class="file-input-hidden" type="file" accept=".glb,.gltf" />
+            <button id="btn-import-glb" class="btn-primary" type="button">${I18n.t("btn_import_glb")}</button>
+            <button id="btn-restore-proto" class="btn-secondary" type="button" style="display:none;">${I18n.t("btn_restore_prototype")}</button>
+          </div>
+        </section>
+      </div>
+    `;
+
+    const canvasHost = containerEl.querySelector("#atlas-canvas-host");
+    const statsEl = containerEl.querySelector("#hud-model-stats");
+    const loadingEl = containerEl.querySelector("#viewer-loading");
+    const disclaimerEl = containerEl.querySelector("#prototype-disclaimer");
+    const btnSkin = containerEl.querySelector("#btn-toggle-skin");
+    const btnRotate = containerEl.querySelector("#btn-auto-rotate");
+    const btnRestore = containerEl.querySelector("#btn-restore-proto");
+    const fileInput = containerEl.querySelector("#glb-file-input");
+
+    activeViewer = new AnatomyViewer3D(canvasHost, ({ label, meshCount, isCustomModel }) => {
+      statsEl.textContent = `${label} • ${meshCount} ${I18n.t("atlas_parts_unit")}`;
+      btnSkin.style.display = isCustomModel ? "none" : "inline-block";
+      btnRestore.style.display = isCustomModel ? "inline-block" : "none";
+      disclaimerEl.style.display = isCustomModel ? "none" : "flex";
+    });
+
+    activeViewer.init();
+
+    containerEl.querySelector("#btn-reset-cam").addEventListener("click", () => {
+      activeViewer.resetCamera();
+    });
+
+    btnSkin.addEventListener("click", () => {
+      const visible = activeViewer.toggleSkinLayer();
+      btnSkin.classList.toggle("is-active", visible);
+    });
+
+    btnRotate.addEventListener("click", () => {
+      const rotating = activeViewer.toggleAutoRotate();
+      btnRotate.classList.toggle("is-active", rotating);
+    });
+
+    containerEl.querySelector("#btn-import-glb").addEventListener("click", () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      loadingEl.classList.add("is-visible");
+      try {
+        await activeViewer.loadLocalGltfFile(file);
+      } catch (err) {
+        alert(`${I18n.t("atlas_import_error")}: ${err.message}`);
+      } finally {
+        loadingEl.classList.remove("is-visible");
+        fileInput.value = "";
+      }
+    });
+
+    btnRestore.addEventListener("click", () => {
+      activeViewer.loadPrototypeModel();
+      btnSkin.classList.add("is-active");
+    });
+
     return;
   }
 
