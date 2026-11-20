@@ -1,4 +1,4 @@
-const CACHE_NAME = "ha3d-core-v8.0.0";
+const CACHE_NAME = "ha3d-core-v9.0.0";
 
 const CORE_ASSETS = [
   "./",
@@ -22,11 +22,10 @@ const CORE_ASSETS = [
   "./js/ui/router.js",
   "./js/anatomy3d/prototypeModel.js",
   "./js/anatomy3d/viewer3d.js",
-  "./js/physiology/physiologyLab.js",
+  "./js/ui/views.js",
   "./js/imaging/imagingLab.js",
   "./js/academy/academyLab.js",
   "./js/quiz/quizLab.js",
-  "./js/ui/views.js",
   "./js/core/bootstrap.js"
 ];
 
