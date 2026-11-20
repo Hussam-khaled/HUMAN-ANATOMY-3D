@@ -29,6 +29,8 @@
     "status_active_layer": "Default Layer",
     "status_ondemand_layer": "On-Demand Load",
     "status_pending": "Loading...",
+    "status_online": "Online • Offline Ready",
+    "status_offline_active": "Offline Mode Active",
     "setting_language": "Language & Layout Direction",
     "setting_language_desc": "Switch interface language and apply RTL/LTR layout immediately.",
     "setting_quality": "Graphics & Performance Profile",
