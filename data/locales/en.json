@@ -1,0 +1,28 @@
+{
+  "languageCode": "en",
+  "dir": "ltr",
+  "strings": {
+    "app_title": "HUMAN ANATOMY 3D",
+    "app_subtitle": "Interactive Offline 3D Human Anatomy Explorer",
+    "phase1_title": "Phase 1: Project Foundation & Architecture",
+    "phase1_desc": "Self-diagnostic dashboard verifying core services before building the main UI.",
+    "check_db": "Local Offline Database (IndexedDB)",
+    "check_systems": "Seeded Anatomical Systems",
+    "check_i18n": "Localization & Direction (RTL/LTR)",
+    "check_offline": "Offline Service Worker",
+    "check_licenses": "Open-Source License Registry",
+    "status_ok": "Passed",
+    "status_pending": "Checking...",
+    "status_warn": "Warning",
+    "status_fail": "Failed",
+    "btn_switch_lang": "Switch to Arabic (العربية)",
+    "nav_atlas": "3D Anatomy Atlas",
+    "nav_systems": "Body Systems",
+    "nav_anatomy_lab": "Anatomy Lab",
+    "nav_physiology_lab": "Physiology Lab",
+    "nav_imaging_lab": "Medical Imaging Lab",
+    "nav_academy": "Medical Academy",
+    "nav_quiz": "Quiz Center",
+    "nav_settings": "Settings"
+  }
+}
