@@ -1,4 +1,4 @@
-const CACHE_NAME = "ha3d-core-v5.0.1";
+const CACHE_NAME = "ha3d-core-v5.1.0";
 
 const CORE_ASSETS = [
   "./",
