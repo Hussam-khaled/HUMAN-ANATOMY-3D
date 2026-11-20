@@ -519,9 +519,9 @@ export async function renderView(routeId, containerEl, onLanguageChange) {
   }
 
   if (routeId === "imaging-lab") {
-    containerEl.innerHTML = renderStageNotice("nav_imaging_lab", "desc_imaging_lab", "planned_phase_7");
-    bindGotoButtons(containerEl);
-    return;
+  const imgLab = new ImagingLabController(containerEl);
+  imgLab.init();
+  return;
   }
 
   if (routeId === "academy") {
