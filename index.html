@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0F172A" />
+  <title>التشريح البشري ثلاثي الأبعاد</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./assets/css/tokens.css" />
+</head>
+<body>
+  <main class="boot-container">
+    <header class="boot-header">
+      <h1 id="app-title">التشريح البشري ثلاثي الأبعاد</h1>
+      <p id="app-subtitle">جارٍ تهيئة المختبر...</p>
+      <div class="boot-actions">
+        <button id="btn-lang" class="btn-primary" type="button">تبديل إلى الإنجليزية (English)</button>
+      </div>
+    </header>
+
+    <section class="diagnostic-card">
+      <h2 id="phase1-title">المرحلة الأولى</h2>
+      <p id="phase1-desc" class="diagnostic-subtitle"></p>
+      <ul id="diagnostic-list" class="check-list"></ul>
+      <div id="systems-grid" class="systems-grid"></div>
+    </section>
+  </main>
+
+  <script type="module" src="./js/core/bootstrap.js"></script>
+</body>
+</html>
