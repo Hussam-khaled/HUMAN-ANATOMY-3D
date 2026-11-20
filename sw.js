@@ -1,4 +1,4 @@
-const CACHE_NAME = "ha3d-core-v2.0.0";
+const CACHE_NAME = "ha3d-core-v2.1.0";
 
 const CORE_ASSETS = [
   "./",
@@ -13,6 +13,7 @@ const CORE_ASSETS = [
   "./js/core/settings.js",
   "./js/data/db.js",
   "./js/localization/i18n.js",
+  "./js/ui/icons.js",
   "./js/ui/router.js",
   "./js/ui/views.js",
   "./js/core/bootstrap.js"
