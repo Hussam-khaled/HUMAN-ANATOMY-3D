@@ -121,3 +121,13 @@ async function bootstrap() {
 }
 
 document.addEventListener("DOMContentLoaded", bootstrap);
+window.addEventListener("error", (e) => {
+  const box = document.getElementById("view-container") || document.body;
+  box.innerHTML = `<pre style="color:#f87171;direction:ltr;text-align:left;padding:16px;white-space:pre-wrap;">Error: ${e.message}\n${e.filename || ""}:${e.lineno || ""}</pre>`;
+});
+
+window.addEventListener("unhandledrejection", (e) => {
+  const box = document.getElementById("view-container") || document.body;
+  const msg = e.reason && e.reason.message ? e.reason.message : String(e.reason);
+  box.innerHTML = `<pre style="color:#f87171;direction:ltr;text-align:left;padding:16px;white-space:pre-wrap;">Promise Error: ${msg}</pre>`;
+});
