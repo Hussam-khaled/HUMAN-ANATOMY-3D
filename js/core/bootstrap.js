@@ -4,6 +4,7 @@ import { DatabaseService } from "../data/db.js";
 import { I18n } from "../localization/i18n.js";
 import { ROUTES, Router } from "../ui/router.js";
 import { renderView } from "../ui/views.js";
+import { getIcon } from "../ui/icons.js";
 
 const dom = {};
 
@@ -29,11 +30,10 @@ function toggleDrawer(forceState) {
 }
 
 function renderNavigationMenus(activeRouteId) {
-  // 1. Sidebar (All 8 sections)
   dom.sidebarNav.innerHTML = ROUTES.map(
     (route) => `
       <button class="nav-item ${route.id === activeRouteId ? "is-active" : ""}" type="button" data-route="${route.id}">
-        <span class="nav-icon">${route.icon}</span>
+        <span class="nav-icon">${getIcon(route.icon)}</span>
         <span>${I18n.t(route.titleKey)}</span>
       </button>
     `
@@ -46,12 +46,11 @@ function renderNavigationMenus(activeRouteId) {
     });
   });
 
-  // 2. Mobile Bottom Quick Nav (4 primary shortcuts)
   dom.bottomNav.innerHTML = ROUTES.filter((r) => r.quickNav)
     .map(
       (route) => `
         <button class="bottom-nav-btn ${route.id === activeRouteId ? "is-active" : ""}" type="button" data-route="${route.id}">
-          <span class="bottom-nav-icon">${route.icon}</span>
+          <span class="bottom-nav-icon">${getIcon(route.icon)}</span>
           <span>${I18n.t(route.titleKey).split(" ")[0]}</span>
         </button>
       `
@@ -100,6 +99,9 @@ async function registerServiceWorker() {
 async function bootstrap() {
   cacheDom();
 
+  dom.btnMenu.innerHTML = getIcon("menu");
+  dom.btnModalClose.innerHTML = getIcon("close");
+
   const savedLang = SettingsService.getLanguage();
   SettingsService.getGraphicsQuality();
 
@@ -107,7 +109,6 @@ async function bootstrap() {
   await DatabaseService.init();
   await registerServiceWorker();
 
-  // Bind shell controls
   dom.btnMenu.addEventListener("click", () => toggleDrawer());
   dom.backdrop.addEventListener("click", () => toggleDrawer(false));
   dom.btnQuickLang.addEventListener("click", () => handleLanguageSwitch());
@@ -116,7 +117,6 @@ async function bootstrap() {
     if (e.target === dom.modal) dom.modal.classList.remove("is-open");
   });
 
-  // Start router
   Router.init(handleRouteChange);
 }
 
