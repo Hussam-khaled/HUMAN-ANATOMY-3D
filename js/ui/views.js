@@ -4,13 +4,19 @@ import { DatabaseService } from "../data/db.js";
 import { I18n } from "../localization/i18n.js";
 import { Router } from "./router.js";
 import { AnatomyViewer3D } from "../anatomy3d/viewer3d.js";
+import { PhysiologyLabController } from "../physiology/physiologyLab.js";
 
 let activeViewer = null;
+let activePhysiology = null;
 
 export function cleanupActiveView() {
   if (activeViewer) {
     activeViewer.dispose();
     activeViewer = null;
+  }
+  if (activePhysiology) {
+    activePhysiology.dispose();
+    activePhysiology = null;
   }
 }
 
@@ -28,7 +34,7 @@ function renderStageNotice(titleKey, descKey, phaseLabelKey) {
       <p class="card-desc">${I18n.t("module_honesty_note")}</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn-secondary" type="button" data-goto="atlas">${I18n.t("nav_atlas")}</button>
-        <button class="btn-secondary" type="button" data-goto="anatomy-lab">${I18n.t("nav_anatomy_lab")}</button>
+        <button class="btn-secondary" type="button" data-goto="physiology-lab">${I18n.t("nav_physiology_lab")}</button>
       </div>
     </div>
   `;
@@ -69,7 +75,6 @@ function renderInteractive3DWorkspace(containerEl, isLabMode) {
         </div>
       </div>
 
-      <!-- Selected Organ Card -->
       <section id="selection-card" class="selection-card">
         <div class="selection-header">
           <div>
@@ -85,7 +90,6 @@ function renderInteractive3DWorkspace(containerEl, isLabMode) {
         </div>
       </section>
 
-      <!-- Dissection & Layers Panel -->
       <section class="tools-panel">
         <div class="explode-row">
           <div class="explode-header">
@@ -108,7 +112,6 @@ function renderInteractive3DWorkspace(containerEl, isLabMode) {
         </div>
       </section>
 
-      <!-- Local GLB Importer -->
       <section class="import-bar">
         <div>
           <div class="card-title">${I18n.t("atlas_import_title")}</div>
@@ -161,7 +164,6 @@ function renderInteractive3DWorkspace(containerEl, isLabMode) {
 
   activeViewer.init();
 
-  // If opened from Anatomy Lab, start with a slight exploded preview for dissection feel
   if (isLabMode) {
     explodeSlider.value = "25";
     explodePercent.textContent = "25%";
@@ -252,6 +254,12 @@ export async function renderView(routeId, containerEl, onLanguageChange) {
     return;
   }
 
+  if (routeId === "physiology-lab") {
+    activePhysiology = new PhysiologyLabController(containerEl);
+    activePhysiology.init();
+    return;
+  }
+
   if (routeId === "systems") {
     const systems = await DatabaseService.getAllBodySystems();
     const cardsHtml = systems
@@ -281,12 +289,6 @@ export async function renderView(routeId, containerEl, onLanguageChange) {
       </section>
       <div class="cards-grid">${cardsHtml}</div>
     `;
-    return;
-  }
-
-  if (routeId === "physiology-lab") {
-    containerEl.innerHTML = renderStageNotice("nav_physiology_lab", "desc_physiology_lab", "planned_phase_6");
-    bindGotoButtons(containerEl);
     return;
   }
 
