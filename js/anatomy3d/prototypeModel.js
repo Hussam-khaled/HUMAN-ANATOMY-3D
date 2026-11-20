@@ -84,12 +84,12 @@ export function buildPrototypeHumanModel() {
 
   // ===== 2. SKELETAL LAYER =====
   createPart(new THREE.SphereGeometry(0.115, 20, 20), matBone, { organId: "bone_skull", layer: "skeletal", systemId: "skeletal", nameAr: "الجمجمة", nameEn: "Skull" }, [0, 1.63, 0], [0, 0, 0], [0.95, 1.1, 1.0]);
-  createPart(new THREE.CylinderGeometry(0.028, 0.032, 0.62, 12), matBone, { organId: "bone_spine", layer: "skeletal", systemId: "skeletal", nameAr: "العمود الفقري", nameEn: "Vertebral Column" }, [0, 1.18, -0.05]);
+  createPart(new THREE.CylinderGeometry(0.012, 0.014, 0.62, 8), matBone, { organId: "bone_spine", layer: "skeletal", systemId: "skeletal", nameAr: "العمود الفقري", nameEn: "Vertebral Column" }, [0, 1.18, -0.05]);
 
-  // Ribcage (6 stylized rib pairs)
-  for (let i = 0; i < 6; i++) {
-    const y = 1.38 - i * 0.045;
-    const radius = 0.145 - Math.abs(i - 2) * 0.008;
+  // Ribcage (10 rib levels, barrel-shaped profile)
+  for (let i = 0; i < 10; i++) {
+    const y = 1.41 - i * 0.04;
+    const radius = 0.09 + 0.05 * Math.sin((Math.PI * (i + 1)) / 11);
     createPart(
       new THREE.TorusGeometry(radius, 0.011, 8, 24),
       matBone,
@@ -132,6 +132,113 @@ export function buildPrototypeHumanModel() {
   // ===== 6. CARDIOVASCULAR / VESSELS LAYER =====
   createPart(new THREE.CylinderGeometry(0.012, 0.011, 0.48, 10), matArtery, { organId: "vessel_aorta", layer: "vascular", systemId: "cardiovascular", nameAr: "الشريان الأبهر", nameEn: "Aorta" }, [0.015, 1.15, 0.01]);
   createPart(new THREE.CylinderGeometry(0.012, 0.011, 0.48, 10), matVein, { organId: "vessel_vena_cava", layer: "vascular", systemId: "cardiovascular", nameAr: "الوريد الأجوف", nameEn: "Vena Cava" }, [-0.018, 1.15, 0.01]);
+
+  // ===== REFINEMENT PASS: anatomically-shaped parts =====
+  const shape = (geo, fn) => {
+    const pos = geo.attributes.position;
+    const v = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i); fn(v); pos.setXYZ(i, v.x, v.y, v.z); }
+    geo.computeVertexNormals();
+    return geo;
+  };
+  const lbl = (s) => (s > 0 ? ["يسار", "Left"] : ["يمين", "Right"]);
+  const meta = (id, layer, sys, ar, en) => ({ organId: id, layer, systemId: sys, nameAr: ar, nameEn: en });
+  const tube = (pts, r, mat, m) => createPart(
+    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((q) => new THREE.Vector3(...q))), 32, r, 8, false), mat, m, [0, 0, 0]);
+
+  // Lungs: tapered apex, broad base, flattened front-to-back
+  [["organ_lung_l"], ["organ_lung_r"]].forEach(([id]) => {
+    const m = layers.organs.getObjectByName(id);
+    if (!m) return;
+    m.geometry.dispose();
+    m.geometry = shape(new THREE.SphereGeometry(0.07, 24, 20), (v) => {
+      const t = (v.y / 0.07 + 1) / 2;
+      v.x *= 0.62 + 0.5 * (1 - t); v.z *= 0.7; v.y *= 1.75;
+    });
+    m.rotation.set(0, 0, 0); m.scale.set(1, 1, 1);
+  });
+  // Heart: teardrop with apex pointing down-left
+  const heart = layers.organs.getObjectByName("organ_heart");
+  if (heart) {
+    heart.geometry.dispose();
+    heart.geometry = shape(new THREE.SphereGeometry(0.058, 24, 20), (v) => {
+      const t = (v.y / 0.058 + 1) / 2;
+      v.x *= 0.55 + 0.6 * t; v.z *= 0.8 + 0.2 * t;
+    });
+  }
+
+  // Skin additions: neck, hands, feet
+  const skinMeta = (id, ar, en) => meta(id, "skin", "integumentary", ar, en);
+  createPart(new THREE.CylinderGeometry(0.05, 0.058, 0.14, 16), matSkin, skinMeta("skin_neck", "الجلد - الرقبة", "Skin - Neck"), [0, 1.49, 0]);
+  [1, -1].forEach((s) => {
+    const [a, e] = lbl(s);
+    createPart(new THREE.SphereGeometry(0.045, 16, 12), matSkin, skinMeta(`skin_hand_${s > 0 ? "l" : "r"}`, `الجلد - اليد (${a})`, `Skin - ${e} Hand`), [s * 0.345, 0.72, 0], [0, 0, 0], [0.8, 1.5, 0.45]);
+    createPart(new THREE.BoxGeometry(0.085, 0.05, 0.19), matSkin, skinMeta(`skin_foot_${s > 0 ? "l" : "r"}`, `الجلد - القدم (${a})`, `Skin - ${e} Foot`), [s * 0.12, 0.0, 0.05]);
+  });
+
+  // Skeleton additions
+  const boneMeta = (id, ar, en) => meta(id, "skeletal", "skeletal", ar, en);
+  for (let i = 0; i < 24; i++) {
+    const t = i / 23;
+    const grp = i < 7 ? ["عنقية", "Cervical"] : i < 19 ? ["صدرية", "Thoracic"] : ["قطنية", "Lumbar"];
+    createPart(new THREE.CylinderGeometry(0.012 + 0.012 * t, 0.013 + 0.012 * t, 0.02, 10), matBone,
+      boneMeta(`bone_vertebra_${i + 1}`, `فقرة ${grp[0]} (${i + 1})`, `${grp[1]} Vertebra ${i + 1}`),
+      [0, 1.49 - t * 0.62, -0.05 + 0.016 * Math.sin(t * Math.PI * 2)]);
+  }
+  createPart(new THREE.BoxGeometry(0.035, 0.2, 0.012), matBone, boneMeta("bone_sternum", "القص", "Sternum"), [0, 1.3, 0.1]);
+  createPart(new THREE.SphereGeometry(0.07, 18, 12), matBone, boneMeta("bone_mandible", "الفك السفلي", "Mandible"), [0, 1.545, 0.045], [0, 0, 0], [0.95, 0.45, 0.8]);
+  [1, -1].forEach((s) => {
+    const [a, e] = lbl(s), k = s > 0 ? "l" : "r";
+    createPart(new THREE.CylinderGeometry(0.009, 0.009, 0.17, 8), matBone, boneMeta(`bone_clavicle_${k}`, `الترقوة (${a})`, `${e} Clavicle`), [s * 0.085, 1.47, 0.055], [0, 0, Math.PI / 2 - s * 0.15]);
+    createPart(new THREE.SphereGeometry(0.06, 14, 10), matBone, boneMeta(`bone_scapula_${k}`, `لوح الكتف (${a})`, `${e} Scapula`), [s * 0.1, 1.37, -0.08], [0, 0, 0], [1, 1.2, 0.22]);
+    createPart(new THREE.SphereGeometry(0.02, 12, 10), matBone, boneMeta(`bone_patella_${k}`, `الرضفة (${a})`, `${e} Patella`), [s * 0.12, 0.42, 0.045], [0, 0, 0], [1, 1.2, 0.6]);
+    createPart(new THREE.BoxGeometry(0.05, 0.09, 0.02), matBone, boneMeta(`bone_hand_${k}`, `عظام اليد (${a})`, `${e} Hand Bones`), [s * 0.345, 0.7, 0]);
+    createPart(new THREE.BoxGeometry(0.06, 0.035, 0.15), matBone, boneMeta(`bone_foot_${k}`, `عظام القدم (${a})`, `${e} Foot Bones`), [s * 0.12, 0.0, 0.05]);
+  });
+
+  // Muscle additions
+  const musMeta = (id, ar, en) => meta(id, "muscular", "muscular", ar, en);
+  for (let i = 0; i < 3; i++) {
+    [1, -1].forEach((s) => {
+      const [a, e] = lbl(s);
+      createPart(new THREE.BoxGeometry(0.06, 0.06, 0.03), matMuscle, musMeta(`muscle_rectus_${s > 0 ? "l" : "r"}_${i + 1}`, `العضلة المستقيمة البطنية (${a}) ${i + 1}`, `${e} Rectus Abdominis ${i + 1}`), [s * 0.037, 1.04 - i * 0.07, 0.1]);
+    });
+  }
+  [1, -1].forEach((s) => {
+    const [a, e] = lbl(s), k = s > 0 ? "l" : "r";
+    createPart(new THREE.CapsuleGeometry(0.036, 0.16, 8, 12), matMuscle, musMeta(`muscle_biceps_${k}`, `العضلة ذات الرأسين (${a})`, `${e} Biceps`), [s * 0.335, 1.25, 0.03]);
+    createPart(new THREE.CapsuleGeometry(0.045, 0.14, 8, 12), matMuscle, musMeta(`muscle_gastroc_${k}`, `عضلة بطة الساق (${a})`, `${e} Gastrocnemius`), [s * 0.12, 0.28, -0.04]);
+    createPart(new THREE.SphereGeometry(0.075, 16, 14), matMuscle, musMeta(`muscle_gluteus_${k}`, `العضلة الألوية (${a})`, `${e} Gluteus`), [s * 0.1, 0.78, -0.085], [0, 0, 0], [1, 1.05, 0.8]);
+  });
+  createPart(new THREE.BoxGeometry(0.3, 0.17, 0.03), matMuscle, musMeta("muscle_trapezius", "العضلة شبه المنحرفة", "Trapezius"), [0, 1.4, -0.1]);
+
+  // Organ additions
+  const orgMeta = (id, sys, ar, en) => meta(id, "organs", sys, ar, en);
+  const matIntest = new THREE.MeshStandardMaterial({ color: 0xe8a0a0, roughness: 0.5 });
+  const matColon = new THREE.MeshStandardMaterial({ color: 0xc27a5a, roughness: 0.5 });
+  const matThyroid = new THREE.MeshStandardMaterial({ color: 0xb36bb3, roughness: 0.5 });
+  const matDiaph = new THREE.MeshStandardMaterial({ color: 0xb85c5c, roughness: 0.6, transparent: true, opacity: 0.55, side: THREE.DoubleSide });
+  createPart(new THREE.CylinderGeometry(0.011, 0.011, 0.17, 10), matLung, orgMeta("organ_trachea", "respiratory", "القصبة الهوائية", "Trachea"), [0, 1.43, 0.025]);
+  createPart(new THREE.SphereGeometry(0.02, 12, 10), matThyroid, orgMeta("organ_thyroid", "endocrine", "الغدة الدرقية", "Thyroid Gland"), [0, 1.49, 0.045], [0, 0, 0], [1.6, 1, 0.6]);
+  createPart(new THREE.SphereGeometry(0.14, 24, 10, 0, Math.PI * 2, 0, Math.PI / 2), matDiaph, orgMeta("organ_diaphragm", "respiratory", "الحجاب الحاجز", "Diaphragm"), [0, 1.17, 0], [0, 0, 0], [1.05, 0.35, 0.7]);
+  createPart(new THREE.SphereGeometry(0.036, 14, 12), matKidney, orgMeta("organ_bladder", "urinary", "المثانة", "Urinary Bladder"), [0, 0.87, 0.045]);
+  const sm = [];
+  for (let k = 0; k <= 36; k++) sm.push([0.075 * Math.sin(k * 1.25) * (k % 2 ? 1 : 0.9), 0.87 + k * 0.0035, 0.055 + 0.012 * Math.cos(k * 0.9)]);
+  tube(sm, 0.011, matIntest, orgMeta("organ_small_intestine", "digestive", "الأمعاء الدقيقة", "Small Intestine"));
+  tube([[-0.1, 0.87, 0.03], [-0.1, 0.99, 0.03], [0, 1.02, 0.03], [0.1, 0.99, 0.03], [0.1, 0.87, 0.03]], 0.016, matColon, orgMeta("organ_large_intestine", "digestive", "الأمعاء الغليظة (القولون)", "Large Intestine (Colon)"));
+
+  // Vessel and nerve additions
+  const vesMeta = (id, ar, en) => meta(id, "vascular", "cardiovascular", ar, en);
+  const nerMeta = (id, ar, en) => meta(id, "nervous", "nervous", ar, en);
+  [1, -1].forEach((s) => {
+    const [a, e] = lbl(s), k = s > 0 ? "l" : "r";
+    tube([[s * 0.02, 1.4, 0.04], [s * 0.035, 1.5, 0.05], [s * 0.045, 1.57, 0.045]], 0.006, matArtery, vesMeta(`vessel_carotid_${k}`, `الشريان السباتي (${a})`, `${e} Carotid Artery`));
+    tube([[s * 0.035, 1.4, 0.03], [s * 0.05, 1.5, 0.035], [s * 0.055, 1.57, 0.03]], 0.007, matVein, vesMeta(`vessel_jugular_${k}`, `الوريد الوداجي (${a})`, `${e} Jugular Vein`));
+    tube([[s * 0.06, 0.84, 0.03], [s * 0.09, 0.6, 0.04], [s * 0.115, 0.3, 0.035]], 0.008, matArtery, vesMeta(`vessel_femoral_a_${k}`, `الشريان الفخذي (${a})`, `${e} Femoral Artery`));
+    tube([[s * 0.075, 0.84, 0.03], [s * 0.105, 0.6, 0.04], [s * 0.13, 0.3, 0.035]], 0.009, matVein, vesMeta(`vessel_femoral_v_${k}`, `الوريد الفخذي (${a})`, `${e} Femoral Vein`));
+    tube([[s * 0.035, 1.42, -0.055], [s * 0.2, 1.38, -0.03], [s * 0.33, 1.1, -0.02], [s * 0.345, 0.8, -0.01]], 0.005, matNerve, nerMeta(`nerve_brachial_${k}`, `الضفيرة العضدية والعصب الزندي (${a})`, `${e} Brachial Plexus / Ulnar Nerve`));
+  });
+  tube([[0, 1.58, 0.0], [0.02, 1.48, 0.03], [0.03, 1.32, 0.045], [0.015, 1.1, 0.05]], 0.004, matNerve, nerMeta("nerve_vagus", "العصب المبهم", "Vagus Nerve"));
 
   return { root, layers };
 }
